@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikiporta | Your Custom, Your Mind, Your Rules</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --mw-bg: #f6f6f6;
+            --mw-link: #0645ad;
+            --mw-border: #a7d7f9;
+            --accent-color: #3498db;
+        }
+
+        body { 
+            background-color: var(--mw-bg); 
+            font-family: sans-serif; 
+            margin: 0;
+        }
+
+        .wrapper { display: flex; }
+
+        /* --- Sidebar (MediaWiki Style) --- */
+        #sidebar {
+            width: 170px;
+            padding: 15px;
+            font-size: 0.8rem;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .wiki-logo { width: 50px; height: 50px; margin-bottom: 10px; }
+        
+        #sidebar .nav-link {
+            color: var(--mw-link);
+            padding: 3px 0;
+            border-radius: 0;
+        }
+        #sidebar .nav-link:hover { text-decoration: underline; background: none; }
+        #sidebar hr { margin: 10px 0; color: #ccc; }
+
+        /* --- Main Content Area --- */
+        #main-content {
+            margin-left: 170px;
+            background-color: white;
+            border-left: 1px solid #a7d7f9;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- MediaWiki Tabs System --- */
+        .mw-tabs-container {
+            display: flex;
+            padding-left: 10px;
+            padding-top: 10px;
+            background: var(--mw-bg);
+        }
+
+        .mw-tab {
+            padding: 8px 15px;
+            border: 1px solid transparent;
+            border-bottom: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--mw-link);
+            background: var(--mw-bg);
+        }
+
+        .mw-tab.active {
+            background: white;
+            border-color: #a7d7f9;
+            color: #000;
+            font-weight: normal;
+            position: relative;
+            z-index: 2;
+            margin-bottom: -1px;
+        }
+
+        .content-wrapper {
+            padding: 20px 40px;
+            border-top: 1px solid #a7d7f9;
+            flex-grow: 1;
+        }
+
+        /* --- Dark Mode adjustments --- */
+        [data-theme='dark'] {
+            --mw-bg: #1a1a1a;
+            --mw-link: #69a3ff;
+            background-color: #1a1a1a;
+        }
+        [data-theme='dark'] #main-content { background-color: #222; border-left-color: #444; color: #eee; }
+        [data-theme='dark'] .mw-tab.active { background-color: #222; border-color: #444; color: #fff; }
+        [data-theme='dark'] .card { background: #333; border-color: #444; color: #fff; }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            border-top: 1px solid #ccc;
+            font-size: 0.75rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="wrapper">
+    <nav id="sidebar">
+        <div class="text-center mb-4">
+            <svg class="wiki-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="5"/>
+                <path d="M30 30 L70 30 L70 70 L30 70 Z" fill="var(--accent-color)"/>
+                <path d="M50 20 L50 80" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <h5 class="mt-1" style="font-weight: bold; letter-spacing: 1px;">WIKIPORTA</h5>
+        </div>
+
+        <div class="search-box mb-3">
+            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search...">
+        </div>
+
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('home')">Main page</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('create-article')">Create Article</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('create-portal')">Create Portal</a></li>
+            <hr>
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('rules')">Wikiporta Rules</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('about')">About Wikiporta</a></li>
+            <li class="nav-item"><a href="#" class="nav-link" onclick="route('settings')">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="mw-tabs-container">
+            <div class="mw-tab active" onclick="route('home')">Page</div>
+            <div class="mw-tab">Discussion</div>
+            <div class="mw-tab" style="margin-left: auto;">Read</div>
+            <div class="mw-tab" onclick="route('create-article')">Edit</div>
+            <div class="mw-tab">View history</div>
+        </div>
+
+        <div class="content-wrapper">
+            <div id="view-container">
+                </div>
+
+            <footer>
+                <p>&copy; 2026 Wikiporta Project. Licensed under MIT. <br> 
+                <em>"Your Custom, Your Mind, Your Rules"</em></p>
+            </footer>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    /* --- CORE APP LOGIC (စာသားများ မဖျက်ထားပါ) --- */
+    const views = {
+        home: `
+            <h1>Welcome to Wikiporta</h1>
+            <p class="lead">Knowledge is portable. Start your journey by creating your first article.</p>
+            <div class="row mt-4">
+                <div class="col-md-6"><div class="card p-3 shadow-sm"><h5>Recent Articles</h5><p>No articles yet.</p></div></div>
+                <div class="col-md-6"><div class="card p-3 shadow-sm"><h5>Popular Portals</h5><p>Main Portal</p></div></div>
+            </div>
+        `,
+        'create-article': `
+            <h1>Create New Article</h1>
+            <input type="text" class="form-control mb-3" placeholder="Article Title">
+            <textarea class="form-control mb-3" rows="10" placeholder="Write in Markdown..."></textarea>
+            <button class="btn btn-primary btn-sm" onclick="saveData()">Publish Article</button>
+        `,
+        'create-portal': `
+            <h1>Create Portal</h1>
+            <p>Group your articles into a custom Portal.</p>
+            <input type="text" class="form-control mb-3" placeholder="Portal Name">
+            <button class="btn btn-success btn-sm">Initialize Portal</button>
+        `,
+        'rules': `
+            <h1>Wikiporta Rules</h1>
+            <ul>
+                <li><strong>Rule 1:</strong> Ownership belongs to the creator.</li>
+                <li><strong>Rule 2:</strong> Portability must be maintained.</li>
+                <li><strong>Rule 3:</strong> Open Source is the heart of the project.</li>
+            </ul>
+        `,
+        'about': `
+            <h1>About Wikiporta</h1>
+            <p>Wikiporta is an open-source, portable wiki engine designed for freedom.</p>
+            <p><strong>Version:</strong> 1.0.0 (Alpha)</p>
+        `,
+        'settings': `
+            <h1>Settings</h1>
+            <div class="card p-4">
+                <label class="mb-2"><strong>Theme Selection</strong></label>
+                <select class="form-select mb-3" onchange="toggleTheme(this.value)">
+                    <option value="light">Light Mode</option>
+                    <option value="dark">Dark Mode</option>
+                </select>
+                <label class="mb-2"><strong>Database Path</strong></label>
+                <input type="text" class="form-control" value="data/wikiporta.sqlite" readonly>
+            </div>
+        `
+    };
+
+    function route(viewName) {
+        const container = document.getElementById('view-container');
+        container.innerHTML = views[viewName] || '<h1>404</h1>';
+        
+        // Tab highlight logic
+        document.querySelectorAll('.mw-tab').forEach(t => t.classList.remove('active'));
+        if(viewName === 'home') document.querySelectorAll('.mw-tab')[0].classList.add('active');
+        if(viewName === 'create-article') document.querySelectorAll('.mw-tab')[3].classList.add('active');
+    }
+
+    function toggleTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('wiki-theme', theme);
+    }
+
+    function saveData() {
+        Swal.fire('Saved!', 'Article stored in your local instance.', 'success');
+    }
+
+    window.onload = () => {
+        const savedTheme = localStorage.getItem('wiki-theme') || 'light';
+        toggleTheme(savedTheme);
+        route('home');
+    };
+</script>
+
+</body>
+</html>
